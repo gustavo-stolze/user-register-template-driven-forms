@@ -1,7 +1,9 @@
-import { NgModule } from "@angular/core";
+import { NgModule } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+// import {  } from '@angular/material';
 
 @NgModule({
-    imports: [],
-    exports: [],
+  imports: [MatCardModule],
+  exports: [MatCardModule],
 })
 export class AngularMaterialModule {}
