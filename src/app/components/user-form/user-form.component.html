@@ -1,6 +1,6 @@
 <mat-card>
     <mat-card-content>
-        <form class="user-form">
+        <form class="user-form" #userForm="ngForm" appPasswordConfirmationValidator>
             <div class="user-form__row">
                 <mat-form-field class="user-form__item user-form__item-100">
                     <mat-label>Nome</mat-label>
@@ -36,6 +36,35 @@
                         *ngIf="userEmailControl.hasError('invalidEmailPattern') && !userEmailControl.hasError('required')">O
                         <strong>e-mail</strong> é
                         inválido.</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="user-form__row">
+                <mat-form-field class="user-form__item user-form__item-50">
+                    <mat-label>Senha:</mat-label>
+                    <input type="password" name="senha" matInput [(ngModel)]="userSelected.password"
+                        (ngModelChange)="onPasswordChange($event)" #passwordControl="ngModel"
+                        appPasswordStrengthValidator required />
+                    <mat-error *ngIf="passwordControl.hasError('required')">A <strong>senha</strong> é
+                        obrigatória.</mat-error>
+                    <mat-error
+                        *ngIf="passwordControl.hasError('invalidPasswordStrength') && !passwordControl.hasError('required')">Digite
+                        uma senha <strong>mais forte.</strong></mat-error>
+                    <mat-progress-bar [value]="passwordStrengthValue" [ngClass]="{
+                        'weak-password': passwordStrengthValue === 0 || passwordStrengthValue === 30,
+                        'medium-password': passwordStrengthValue === 60,
+                        'strong-password': passwordStrengthValue === 100,
+                    }"></mat-progress-bar>
+                </mat-form-field>
+                <mat-form-field class="user-form__item user-form__item-50">
+                    <mat-label>Confirmação de Senha:</mat-label>
+                    <input autocomplete="one-time-code" type="text" name="confirmacaoSenha" matInput ngModel
+                        #passwordConfirmationControl="ngModel" required />
+                    <mat-error *ngIf="passwordConfirmationControl.hasError('required')">
+                        A <strong>Confirmação de Senha</strong> é obrigatória.
+                    </mat-error>
+                    <mat-error *ngIf="passwordConfirmationControl.hasError('invalidPasswordConfirmation') && !passwordConfirmationControl.hasError('required')">
+                        As senhas estão <strong>incorretas</strong>.
+                    </mat-error>
                 </mat-form-field>
             </div>
         </form>
