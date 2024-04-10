@@ -1,0 +1,43 @@
+<mat-card>
+    <mat-card-content>
+        <form class="user-form">
+            <div class="user-form__row">
+                <mat-form-field class="user-form__item user-form__item-100">
+                    <mat-label>Nome</mat-label>
+                    <input type="text" name="nome" matInput [(ngModel)]="userSelected.name" required />
+                    <mat-error>O <strong>nome</strong> é obrigatório.</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="user-form__row">
+                <mat-form-field class="user-form__item user-form__item-50">
+                    <mat-label>Usuário</mat-label>
+                    <input type="text" name="usuario" matInput [(ngModel)]="userSelected.username"
+                        [ngModelOptions]="{ updateOn: 'blur' }" required #userNameControl="ngModel"
+                        [appCredentialsValidator]="'username'" />
+                    <mat-error *ngIf="userNameControl.hasError('required')">O <strong>usuário</strong> é
+                        obrigatório.</mat-error>
+                    <mat-error
+                        *ngIf="userNameControl.hasError('invalidUsername') && !userNameControl.hasError('required')">Este
+                        <strong>usuário</strong> já
+                        existe.</mat-error>
+                </mat-form-field>
+                <mat-form-field class="user-form__item user-form__item-50">
+                    <mat-label>E-mail</mat-label>
+                    <input type="text" name="email" matInput [(ngModel)]="userSelected.email" required
+                        #userEmailControl="ngModel" [ngModelOptions]="{ updateOn: 'blur' }"
+                        [appCredentialsValidator]="'email'" appEmailPatternValidator />
+                    <mat-error *ngIf="userEmailControl.hasError('required')">O <strong>e-mail</strong> é
+                        obrigatório.</mat-error>
+                    <mat-error
+                        *ngIf=" userEmailControl.hasError('invalidEmail') && !userEmailControl.hasError('required')">Este
+                        <strong>e-mail</strong> já
+                        está sendo utilizado.</mat-error>
+                    <mat-error
+                        *ngIf="userEmailControl.hasError('invalidEmailPattern') && !userEmailControl.hasError('required')">O
+                        <strong>e-mail</strong> é
+                        inválido.</mat-error>
+                </mat-form-field>
+            </div>
+        </form>
+    </mat-card-content>
+</mat-card>
