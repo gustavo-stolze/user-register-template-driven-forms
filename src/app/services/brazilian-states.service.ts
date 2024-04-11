@@ -38,10 +38,18 @@ export class BrazilianStateService {
 
   getStates(): Observable<StatesListResponse> {
     return new Observable((observer) => {
-        setTimeout(() => {
-            observer.next(this.statesList);
-            observer.complete();
-        }, 1500)
-    })
+      setTimeout(() => {
+        observer.next(this.statesList);
+        observer.complete();
+      }, 1500);
+    });
+  }
+
+  getStateDescription(stateId: number): string {
+    const stateDescription = this.statesList.find(
+      (state) => state.id === stateId
+    )?.descricao;
+
+    return stateDescription ? stateDescription : '';
   }
 }

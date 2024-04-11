@@ -1,6 +1,6 @@
 <mat-card>
     <mat-card-content>
-        <form class="user-form" #userForm="ngForm" appPasswordConfirmationValidator>
+        <form class="user-form" #userForm="ngForm" (ngSubmit)="onFormSubmit(userForm)" appPasswordConfirmationValidator>
             <div class="user-form__row">
                 <mat-form-field class="user-form__item user-form__item-100">
                     <mat-label>Nome</mat-label>
@@ -41,7 +41,7 @@
             <div class="user-form__row">
                 <mat-form-field class="user-form__item user-form__item-50">
                     <mat-label>Senha:</mat-label>
-                    <input type="password" name="senha" matInput [(ngModel)]="userSelected.password"
+                    <input type="text" name="senha" matInput [(ngModel)]="userSelected.password"
                         (ngModelChange)="onPasswordChange($event)" #passwordControl="ngModel"
                         appPasswordStrengthValidator required />
                     <mat-error *ngIf="passwordControl.hasError('required')">A <strong>senha</strong> é
@@ -62,10 +62,99 @@
                     <mat-error *ngIf="passwordConfirmationControl.hasError('required')">
                         A <strong>Confirmação de Senha</strong> é obrigatória.
                     </mat-error>
-                    <mat-error *ngIf="passwordConfirmationControl.hasError('invalidPasswordConfirmation') && !passwordConfirmationControl.hasError('required')">
+                    <mat-error
+                        *ngIf="passwordConfirmationControl.hasError('invalidPasswordConfirmation') && !passwordConfirmationControl.hasError('required')">
                         As senhas estão <strong>incorretas</strong>.
                     </mat-error>
                 </mat-form-field>
+            </div>
+            <div class="user-form__row">
+                <mat-form-field class="user-form__item user-form__item-50">
+                    <mat-label>Data de Nascimento:</mat-label>
+                    <input matInput [matDatepicker]="picker" [min]="minDate" [max]="maxDate" name="dataNascimento"
+                        [ngModel]="dateValue" (dateChange)="onDateChange($event)" readonly required />
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker>
+                        <mat-datepicker-actions>
+                            <button mat-button matDatepickerCancel>Cancel</button>
+                            <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                        </mat-datepicker-actions>
+                        <mat-hint>dd/mm/aaaaa</mat-hint>
+                    </mat-datepicker>
+                    <mat-error>A <strong>Data de Nascimento</strong> é obrigatória.</mat-error>
+                </mat-form-field>
+                <mat-form-field class="user-form__item user-form__item-50">
+                    <mat-label>Estado:</mat-label>
+                    <mat-select name="estado" [(ngModel)]="userSelected.state" required>
+                        <mat-option>-</mat-option>
+                        <mat-option *ngFor="let state of statesList" [value]="state.id"> {{ state.descricao }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>O <strong>Estado</strong> é obrigatório.</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="user-form__row">
+                <div class="user-form__musics">
+                    <mat-divider></mat-divider>
+                    <div class="user-form__musics-title">
+                        <h2>Minhas Músicas:</h2>
+                    </div>
+                    <table class="user-form__item user-form__item-100" mat-table [dataSource]="userSelected.musics">
+                        <ng-container matColumnDef="title">
+                            <th mat-header-cell *matHeaderCellDef>Título</th>
+                            <td mat-cell *matCellDef="let element; let i = index">
+                                <mat-form-field>
+                                    <mat-label>Título:</mat-label>
+                                    <input type="text" matInput [(ngModel)]="element.title" [name]="'titulo-' + i"
+                                        required />
+                                    <mat-error>O <strong>título</strong> é obrigatório.</mat-error>
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="band">
+                            <th mat-header-cell *matHeaderCellDef>Banda</th>
+                            <td mat-cell *matCellDef="let element; let i = index">
+                                <mat-form-field>
+                                    <mat-label>Banda:</mat-label>
+                                    <input type="text" matInput [(ngModel)]="element.band" [name]="'band-' + i"
+                                        required />
+                                    <mat-error>A <strong>banda</strong> é obrigatória.</mat-error>
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="genre">
+                            <th mat-header-cell *matHeaderCellDef>Gênero</th>
+                            <td mat-cell *matCellDef="let element; let i = index">
+                                <mat-form-field>
+                                    <mat-label>Gênero:</mat-label>
+                                    <input type="text" matInput [name]="'genero-' + i" [(ngModel)]="element.genre"
+                                        required [matAutocomplete]="auto" (ngModelChange)="filterGenres($event)" />
+                                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
+                                        <mat-option *ngFor="let genre of filteredGenresList" [value]="genre.id"> {{
+                                            genre.description }} </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error>O <strong>gênero</strong> é obrigatório.</mat-error>
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="favourite">
+                            <th mat-header-cell *matHeaderCellDef>Favorita</th>
+                            <td mat-cell *matCellDef="let element; let i = index">
+                                <mat-checkbox [name]="'favorita-' + i" [(ngModel)]="element.isFavorite"
+                                    [disabled]="isAnyCheckboxChecked() && !element.isFavorite"></mat-checkbox>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="user-form__button-container">
+                <button type="submit" mat-raised-button color="primary">Salvar</button>
             </div>
         </form>
     </mat-card-content>
